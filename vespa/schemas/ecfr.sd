@@ -1,0 +1,62 @@
+schema ecfr {
+    document ecfr {
+        field id type string {
+            indexing: attribute | summary
+        }
+        field path type string {
+            indexing: attribute | summary
+        }
+        field div type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+        field n type string {
+            indexing: attribute
+        }
+        field doctype type string {
+            indexing: attribute
+        }
+        field tag type string {
+            indexing: attribute | index
+            index: enable-bm25
+        }
+        field head type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+        field parent type string {
+            indexing: attribute
+        }
+        field parentn type string {
+            indexing: attribute
+        }
+        field parenth type string {
+            indexing: attribute
+        }
+
+        field p type string {
+            indexing: index
+            index: enable-bm25
+        }
+    }
+
+    document-summary minimal {
+        summary id type string {  }
+    }
+
+    fieldset default {
+        fields: head, p
+    }
+
+    rank-profile default {
+        first-phase {
+            expression: nativeRank(head, p)
+        }
+    }
+
+    rank-profile bm25 inherits default {
+        first-phase {
+            expression: bm25(head) + bm25(p) + bm25(tag)
+        }
+    }
+}
